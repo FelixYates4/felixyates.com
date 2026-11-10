@@ -210,7 +210,7 @@
     <script>
         const REPO_OWNER = 'FelixYates4';
         const REPO_NAME = 'felixyates.com';
-        const POSTS_FOLDER = 'content/posts'; // Updated to match your config.yml folder path
+        const POSTS_FOLDER = 'posts'; // Updated to point directly to the 'posts' directory
 
         let allPosts = [];
 
@@ -271,20 +271,21 @@
 
         // Parse YAML Front Matter (between --- tags) and Markdown body
         function parseFrontMatter(text) {
-            const match = text.match(/^---?\n([\s\S]*?)?\n---?\n([\s\S]*)$/);
+            const match = text.match(/^---[\r\n]+([\s\S]*?)[\r\n]+---[\r\n]+([\s\S]*)$/);
+            
             if (!match) {
                 return {
                     title: 'Untitled',
                     date: '',
                     image: '',
                     rawContent: text,
-                    htmlContent: marked.parse(text)
+                    htmlContent: typeof marked.parse === 'function' ? marked.parse(text) : marked(text)
                 };
             }
 
             const yamlHeader = match[1];
             const body = match[2];
-            const meta = jsyaml.load(yamlHeader) || {};
+            const meta = (typeof jsyaml !== 'undefined' && jsyaml.load) ? jsyaml.load(yamlHeader) : {};
 
             let formattedDate = meta.date || '';
             if (formattedDate instanceof Date) {
@@ -293,12 +294,14 @@
                 formattedDate = formattedDate.replace('T', ' ').substring(0, 16);
             }
 
+            const parsedMarkdown = typeof marked.parse === 'function' ? marked.parse(body) : marked(body);
+
             return {
                 title: meta.title || 'Untitled',
                 date: formattedDate,
                 image: meta.image || '',
                 rawContent: body,
-                htmlContent: marked.parse(body)
+                htmlContent: parsedMarkdown
             };
         }
 

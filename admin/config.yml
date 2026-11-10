@@ -1,18 +1,21 @@
 backend:
   name: git-gateway
-  branch: main
+  branch: main # Change to master if your default branch is master
 
-media_folder: "assets/uploads"
-public_folder: "/assets/uploads"
+# Local backend is enabled so you can test the CMS locally using 'npx decap-server' if desired
+local_backend: true
+
+media_folder: "images" # Folder where uploaded images will be stored in your repo
+public_folder: "/images" # Public URL path for images
 
 collections:
   - name: "posts"
     label: "Posts"
-    folder: "content/posts"
+    folder: "posts" # Points directly to your posts directory
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Cover/Attached Image", name: "image", widget: "image", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Featured Image", name: "image", widget: "image", required: false}
+      - {label: "Body", name: "body", widget: "markdown"}
